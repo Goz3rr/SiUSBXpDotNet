@@ -25,10 +25,26 @@ namespace SiUSBXpDotNet
         DeviceNotFound = 0xFF,
     }
 
+    internal enum SiProductString
+    {
+        SerialNumber = 0,
+        Description = 1,
+        LinkName = 2,
+        Vid = 3,
+        Pid = 4,
+    }
+
     internal static partial class SiUSBXp
     {
         [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetNumDevices")]
         internal static partial SiStatus SI_GetNumDevices(out uint lpdwNumDevices);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetProductStringSafe")]
+        internal static unsafe partial SiStatus SI_GetProductStringSafe(uint dwDeviceNum, out byte lpvDeviceString, IntPtr DeviceStringLenInBytes, SiProductString dwFlags);
+
+        [Obsolete("Deprecated. Use SI_GetProductStringSafe instead")]
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetProductString")]
+        internal static unsafe partial SiStatus SI_GetProductString(uint dwDeviceNum, out byte lpvDeviceString, uint dwFlags);
 
         static SiUSBXp()
         {
