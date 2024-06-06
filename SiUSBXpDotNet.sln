@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34928.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiUSBXpDotNet", "SiUSBXpDotNet\SiUSBXpDotNet.csproj", "{71119272-01A8-40B6-B27E-98CB27447E11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "USBXpressTest", "USBXpressTest\USBXpressTest.csproj", "{86ADC830-2C5F-46DF-9D18-32843629EC92}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{71119272-01A8-40B6-B27E-98CB27447E11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71119272-01A8-40B6-B27E-98CB27447E11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71119272-01A8-40B6-B27E-98CB27447E11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71119272-01A8-40B6-B27E-98CB27447E11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86ADC830-2C5F-46DF-9D18-32843629EC92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86ADC830-2C5F-46DF-9D18-32843629EC92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86ADC830-2C5F-46DF-9D18-32843629EC92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86ADC830-2C5F-46DF-9D18-32843629EC92}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {01D3F490-D266-4759-A1D3-7F894D46927A}
+	EndGlobalSection
+EndGlobal
