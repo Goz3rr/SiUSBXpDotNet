@@ -14,16 +14,20 @@ Console.WriteLine($"Found {count} devices");
 
 foreach (var device in USBXpress.GetDevices())
 {
-    Console.WriteLine(device.Description);
+    Console.WriteLine($"Serial: {device.SerialNumber}");
+    Console.WriteLine($"Desc: {device.Description}");
+    Console.WriteLine($"LinkName: {device.LinkName}");
+    Console.WriteLine($"VID: {device.Vid}");
+    Console.WriteLine($"PID: {device.Pid}");
+
     device.Open();
 
     Console.WriteLine($"Partnum: {device.PartNum}");
-    Console.WriteLine($"IF: {device.InterfaceNum}");
     Console.WriteLine($"ProductStr: {device.ProductString}");
 
-    device.Close();
+    //device.Close();
 
-    device.Open();
-    Console.WriteLine($"ProductStr: {device.ProductString}");
-    device.Dispose();
+    //device.Open();
+    //Console.WriteLine($"ProductStr: {device.ProductString}");
+    //device.Dispose();
 }

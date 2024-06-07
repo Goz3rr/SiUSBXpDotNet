@@ -49,18 +49,6 @@ namespace SiUSBXpDotNet
             }
         }
 
-        public byte InterfaceNum
-        {
-            get
-            {
-                if (!IsOpen)
-                    throw new InvalidOperationException();
-
-                _ = SiUSBXp.SI_GetInterfaceNumber(deviceHandle!, out var interfaceNum);
-                return interfaceNum;
-            }
-        }
-
         public string ProductString
         {
             get

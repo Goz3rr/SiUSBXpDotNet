@@ -66,9 +66,6 @@ namespace SiUSBXpDotNet
         [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetPartNumber")]
         internal static partial SiStatus SI_GetPartNumber(SafeUSBXpressDeviceHandle cyHandle, out byte lpbPartNum);
 
-        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetInterfaceNumber")]
-        internal static partial SiStatus SI_GetInterfaceNumber(SafeUSBXpressDeviceHandle cyHandle, out byte lpbInterfaceNum);
-
         [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetDeviceProductString")]
         internal static partial SiStatus SI_GetDeviceProductString(SafeUSBXpressDeviceHandle cyHandle, ref byte lpProduct, out byte lpbLength, [MarshalAs(UnmanagedType.Bool)] bool bConvertToASCII);
 
