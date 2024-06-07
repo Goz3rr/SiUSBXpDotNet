@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace SiUSBXpDotNet
 {
-    internal enum SiStatus
+    internal enum SiStatus : byte
     {
         Success = 0x00,
         InvalidHandle = 0x01,
@@ -25,7 +25,7 @@ namespace SiUSBXpDotNet
         DeviceNotFound = 0xFF,
     }
 
-    internal enum SiProductString
+    internal enum SiProductString : uint
     {
         SerialNumber = 0,
         Description = 1,
@@ -36,15 +36,41 @@ namespace SiUSBXpDotNet
 
     internal static partial class SiUSBXp
     {
+        internal const int MaxDeviceStrLen = 256;
+        internal const int MaxReadSize = 4096 * 16;
+        internal const int MaxWriteSize = 4096;
+
         [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetNumDevices")]
         internal static partial SiStatus SI_GetNumDevices(out uint lpdwNumDevices);
 
-        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetProductStringSafe")]
-        internal static unsafe partial SiStatus SI_GetProductStringSafe(uint dwDeviceNum, out byte lpvDeviceString, IntPtr DeviceStringLenInBytes, SiProductString dwFlags);
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetDLLVersion")]
+        internal static partial SiStatus SI_GetDLLVersion(out uint HighVersion, out uint LowVersion);
 
-        [Obsolete("Deprecated. Use SI_GetProductStringSafe instead")]
-        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetProductString")]
-        internal static unsafe partial SiStatus SI_GetProductString(uint dwDeviceNum, out byte lpvDeviceString, uint dwFlags);
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetProductStringSafe")]
+        internal static unsafe partial SiStatus SI_GetProductStringSafe(uint dwDeviceNum, ref byte lpvDeviceString, IntPtr DeviceStringLenInBytes, SiProductString dwFlags);
+
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetTimeouts")]
+        internal static partial SiStatus SI_GetTimeouts(out uint lpdwReadTimeout, out uint lpdwWriteTimeout);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_SetTimeouts")]
+        internal static partial SiStatus SI_SetTimeouts(uint dwReadTimeoutInMilliseconds, uint dwWriteTimeoutInMilliseconds);
+
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_Open")]
+        internal static partial SiStatus SI_Open(uint dwDevice, ref SafeUSBXpressDeviceHandle cyHandle);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_Close")]
+        internal static partial SiStatus SI_Close(IntPtr cyHandle);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetPartNumber")]
+        internal static partial SiStatus SI_GetPartNumber(SafeUSBXpressDeviceHandle cyHandle, out byte lpbPartNum);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetInterfaceNumber")]
+        internal static partial SiStatus SI_GetInterfaceNumber(SafeUSBXpressDeviceHandle cyHandle, out byte lpbInterfaceNum);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetDeviceProductString")]
+        internal static partial SiStatus SI_GetDeviceProductString(SafeUSBXpressDeviceHandle cyHandle, ref byte lpProduct, out byte lpbLength, [MarshalAs(UnmanagedType.Bool)] bool bConvertToASCII);
 
         static SiUSBXp()
         {
