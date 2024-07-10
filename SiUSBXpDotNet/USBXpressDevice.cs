@@ -1,34 +1,17 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace SiUSBXpDotNet
 {
-    public enum SiLabsPartNum : byte
-    {
-        Unknown = 0x0,
-        CP2101 = 0x1,
-        CP2102 = 0x2,
-        CP2103 = 0x3,
-        CP2104 = 0x4,
-        CP2105 = 0x5,
-        CP2108 = 0x8,
-        CP2109 = 0x9,
-        CP2110 = 0xA,
-        CP2112 = 0xC,
-        CP2114 = 0xE,
-        CP2102N_QFN28 = 0x20,
-        CP2102N_QFN24 = 0x21,
-        CP2102N_QFN20 = 0x22,
-        EFM8 = 0x80,
-        EFM32 = 0x81
-    }
-
     public class USBXpressDevice(uint deviceId) : IDisposable
     {
         private SafeUSBXpressDeviceHandle? deviceHandle;
         private bool disposed;
 
         public uint DeviceID { get; } = deviceId;
+
+        [MemberNotNullWhen(true, nameof(deviceHandle))]
         public bool IsOpen => deviceHandle != null && !deviceHandle.IsInvalid && !deviceHandle.IsClosed;
 
         public string SerialNumber => GetProductString(SiProductString.SerialNumber);
@@ -44,7 +27,7 @@ namespace SiUSBXpDotNet
                 if (!IsOpen)
                     throw new InvalidOperationException();
 
-                _ = SiUSBXp.SI_GetPartNumber(deviceHandle!, out var partNum);
+                _ = SiUSBXp.SI_GetPartNumber(deviceHandle, out var partNum);
                 return (SiLabsPartNum)partNum;
             }
         }
@@ -57,7 +40,7 @@ namespace SiUSBXpDotNet
                     throw new InvalidOperationException();
 
                 ReadOnlySpan<byte> buffer = stackalloc byte[SiUSBXp.MaxDeviceStrLen];
-                _ = SiUSBXp.SI_GetDeviceProductString(deviceHandle!, ref MemoryMarshal.GetReference(buffer), out var len, true);
+                _ = SiUSBXp.SI_GetDeviceProductString(deviceHandle, ref MemoryMarshal.GetReference(buffer), out var len, true);
                 return Encoding.UTF8.GetString(buffer[..len]);
             }
         }
@@ -65,6 +48,25 @@ namespace SiUSBXpDotNet
         public USBXpressDevice(int deviceId)
             : this((uint)deviceId)
         {
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing)
+            {
+                Close();
+            }
+
+            disposed = true;
         }
 
         private string GetProductString(SiProductString productString)
@@ -94,23 +96,35 @@ namespace SiUSBXpDotNet
             deviceHandle = null;
         }
 
-        public void Dispose()
+        public void SetBaudrate(uint baudrate)
         {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            if (!IsOpen)
+                throw new InvalidOperationException();
+
+            var status = SiUSBXp.SI_SetBaudRate(deviceHandle, baudrate);
+
+            if (status == SiStatus.InvalidBaudrate)
+                throw new ArgumentOutOfRangeException(nameof(baudrate), "Invalid baud rate");
         }
 
-        protected virtual void Dispose(bool disposing)
+        public void SetBreak(bool breakState)
         {
-            if (disposed)
-                return;
+            if (!IsOpen)
+                throw new InvalidOperationException();
 
-            if (disposing)
-            {
-                Close();
-            }
+            _ = SiUSBXp.SI_SetBreak(deviceHandle, (ushort)(breakState ? 1 : 0));
 
-            disposed = true;
         }
+
+        public void FlushBuffers(bool flushTransmit = true, bool flushReceive = true)
+        {
+            if (!IsOpen)
+                throw new InvalidOperationException();
+
+            _ = SiUSBXp.SI_FlushBuffers(deviceHandle, (byte)(flushTransmit ? 1 : 0), (byte)(flushReceive ? 1 : 0));
+        }
+
+        // https://usermanual.wiki/Document/AN1692020USBXpress20Programmers20Guide.1429687653/html#pfc
+        // https://www.silabs.com/documents/public/application-notes/AN169.pdf
     }
 }

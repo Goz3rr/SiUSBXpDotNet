@@ -25,6 +25,8 @@ foreach (var device in USBXpress.GetDevices())
     Console.WriteLine($"Partnum: {device.PartNum}");
     Console.WriteLine($"ProductStr: {device.ProductString}");
 
+    device.SetBaudrate(115200);
+
     //device.Close();
 
     //device.Open();

@@ -34,6 +34,36 @@ namespace SiUSBXpDotNet
         Pid = 4,
     }
 
+    internal enum SiRxQueueStatus : uint
+    {
+        Empty = 0,
+        NoOverrun = Empty,
+        Overrun = 1,
+        Ready = 2,
+    }
+
+    internal enum SiPinCharacteristic
+    {
+        HeldInactive = 0,
+        StatusInput = HeldInactive,
+        HeldActive = 1,
+        HandshakeLine= HeldActive,
+        FirmwareControlled = 2,
+        ReceiveFlowControl = 3,
+    }
+
+    internal enum SiGpio : byte
+    {
+        Gpio0 = 1 << 0,
+        Gpio1 = 1 << 1,
+        Gpio2 = 1 << 2,
+        Gpio3 = 1 << 3,
+        Gpio4 = 1 << 4,
+        Gpio5 = 1 << 5,
+        Gpio6 = 1 << 6,
+        Gpio7 = 1 << 7,
+    }
+
     internal static partial class SiUSBXp
     {
         internal const int MaxDeviceStrLen = 256;
@@ -68,6 +98,50 @@ namespace SiUSBXpDotNet
 
         [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetDeviceProductString")]
         internal static partial SiStatus SI_GetDeviceProductString(SafeUSBXpressDeviceHandle cyHandle, ref byte lpProduct, out byte lpbLength, [MarshalAs(UnmanagedType.Bool)] bool bConvertToASCII);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_SetBaudRate")]
+        internal static partial SiStatus SI_SetBaudRate(SafeUSBXpressDeviceHandle cyHandle, uint dwBaudRate);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_SetBreak")]
+        internal static partial SiStatus SI_SetBreak(SafeUSBXpressDeviceHandle cyHandle, ushort wBreakState);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_SetFlowControl")]
+        internal static partial SiStatus SI_SetFlowControl(SafeUSBXpressDeviceHandle cyHandle, byte bCTS_MaskCode, byte bRTS_MaskCode, byte bDTR_MaskCode, byte bDSR_MaskCode, byte bDCD_MaskCode, byte bFlowXonXoff);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_SetLineControl")]
+        internal static partial SiStatus SI_SetLineControl(SafeUSBXpressDeviceHandle cyHandle, ushort wLineControl);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_GetModemStatus")]
+        internal static partial SiStatus SI_GetModemStatus(SafeUSBXpressDeviceHandle cyHandle, out byte ModemStatus);
+
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_ReadLatch")]
+        internal static partial SiStatus SI_ReadLatch(SafeUSBXpressDeviceHandle cyHandle, out byte lpbLatch);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_WriteLatch")]
+        internal static partial SiStatus SI_WriteLatch(SafeUSBXpressDeviceHandle cyHandle, byte bMask, byte bLatch);
+
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_CheckRXQueue")]
+        internal static partial SiStatus SI_CheckRXQueue(SafeUSBXpressDeviceHandle cyHandle, out uint lpdwNumBytesInQueue, out SiRxQueueStatus lpdwQueueStatus);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_FlushBuffers")]
+        internal static partial SiStatus SI_FlushBuffers(SafeUSBXpressDeviceHandle cyHandle, byte FlushTransmit, byte FlushReceive);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_CancelIo")]
+        internal static partial SiStatus SI_CancelIo(SafeUSBXpressDeviceHandle cyHandle);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_CancelIoEx")]
+        internal static partial SiStatus SI_CancelIoEx(SafeUSBXpressDeviceHandle cyHandle, IntPtr o);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_Read")]
+        internal static partial SiStatus SI_Read(SafeUSBXpressDeviceHandle cyHandle, ref byte lpBuffer, uint dwBytesToRead, ref uint lpdwBytesReturned, IntPtr o = default);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_Write")]
+        internal static partial SiStatus SI_Write(SafeUSBXpressDeviceHandle cyHandle, ref byte lpBuffer, uint dwBytesToWrite, ref uint lpdwBytesWritten, IntPtr o = default);
+
+        [LibraryImport(nameof(SiUSBXp), EntryPoint = "SI_DeviceIOControl")]
+        internal static partial SiStatus SI_DeviceIOControl(SafeUSBXpressDeviceHandle cyHandle, uint dwIoControlCode, ref byte lpInBuffer, uint dwBytesToRead, ref byte lpOutBuffer, uint dwBytesToWrite, ref uint lpdwBytesSucceeded);
 
         static SiUSBXp()
         {
